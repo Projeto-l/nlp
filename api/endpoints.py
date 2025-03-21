@@ -34,6 +34,7 @@ async def check_interaction(data: MedicationInput):
     """
     try:
         response = clean_prompt(get_completion(prompt))
-        return json.loads(response)  # Converte a resposta para JSON
+        response_json = json.loads(response)  # Converte a resposta para JSON
+        return response_json  # Retorna o JSON diretamente
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
