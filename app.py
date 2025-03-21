@@ -19,22 +19,40 @@ def get_completion(prompt, model="google/gemini-2.0-pro-exp-02-05:free"):
     )
     return response.choices[0].message.content
 
-prompt = f"""Gere uma lista com as contraindicações de um medicamento específico,\
-citando medicações que não podem ser ministradas em conjunto,\
-organize em tópicos numerados. Por exemplo:\
-1. Dipirona\
-2. Rivotril\
+def clean_prompt(prompt):
+    return re.sub(r"^```json\n|```$", "", prompt.strip(), flags=re.MULTILINE)
 
-Se possível, forneça uma fonte confiável (sem link para páginas). Inclua também\
-situações em que o medicamento não deve ser administrado, como o caso de uma gestante\
-que não pode usar Roacutan.\
-
-Não é necessário explicar suas decisões; retorne apenas a lista com as contraindicações\
-e a fonte, sem muitos detalhes ou observações adicionais.\
-Evite usar formatação em negrito nas palavras (por exemplo: **palavra**).\
-
-medicamento exemplo: amoxicilina\
+medication = f"""
+SImvastatina e Atorvastatina
 """
 
-response = get_completion(prompt)
+prompt = f"""
+Gere apenas um JSON em formato de texto, sem marcação de código. A resposta deve começar diretamente com '{{'. 
+
+O JSON deve conter informações sobre interações medicamentosas entre os fármacos: {medication}.
+
+O JSON deve seguir esta estrutura exata:
+
+{{
+  "medications": [
+    {{
+      "medicationName": "Nome comum do medicamento 1",
+      "thereIsConflict": "True ou False"
+    }},
+    {{
+      "medicationName": "Nome comum do medicamento 2",
+      "thereIsConflict": "True ou False"
+    }}
+  ],
+  "description": "Resumo sucinto e com poucos caracteres do motivo da interação, seguindo o padrão de bulas. 
+   Exemplo: 'Microdoses de progesterona são inadequadas durante o tratamento com isotretinoína, devido a ...'",
+  "alternatives": [
+    "Medicamento alternativo 1 que pode ser ministrado com o 2, especifique apenas a medicação",
+    "Medicamento alternativo 2 que pode ser ministrado com o 1, especifique apenas a medicação"
+  ]
+  observação: Caso thereIsConflict seja "Não", alternatives será no formato: "alternatives": []
+}}
+"""
+
+response = clean_prompt(get_completion(prompt))
 print(response)
