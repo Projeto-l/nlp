@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
-from src.core.openai_client import get_completion, clean_prompt
-from src.api.schemas import MedicationInput, InteractionResponse
+from core.openai_client import get_completion, clean_prompt
+from api.schemas import MedicationInput, InteractionResponse
 import json
 
 router = APIRouter()
