@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from src.api.endpoints import router as interaction_router
+from api.endpoints import router as interaction_router
 
 app = FastAPI()
 
